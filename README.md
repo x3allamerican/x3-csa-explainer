@@ -9,13 +9,13 @@ Built and maintained by **[X3 Fleet Safety](https://x3fleetsafety.com)**.
 ## Install
 
 ```sh
-npm install github:x3allamerican/x3-csa-explainer
+npm install x3-csa-explainer
 ```
 
 ## Use
 
 ```ts
-import { basicMeasure, explain, projection, timeWeight } from '@x3/csa-explainer';
+import { basicMeasure, explain, projection, timeWeight } from 'x3-csa-explainer';
 
 const inspections = [
   { id: 'A', date: '2026-09-01', level: 1, violations: [{ basic: 'hos', code: '395.8(e)', severity: 7 }, { basic: 'vehicle', severity: 4, outOfService: true }] },

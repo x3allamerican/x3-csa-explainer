@@ -1,6 +1,6 @@
 {
-  "name": "@x3/csa-explainer",
-  "version": "1.0.0",
+  "name": "x3-csa-explainer",
+  "version": "1.0.1",
   "description": "How FMCSA's SMS turns roadside inspections into CSA BASIC measures: what drives them and when inspections stop counting. HOS, Vehicle Maintenance, Driver Fitness, HM.",
   "type": "module",
   "main": "dist/index.js",
@@ -49,5 +49,8 @@
   },
   "devDependencies": {
     "typescript": "^5.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
