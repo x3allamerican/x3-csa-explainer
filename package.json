@@ -1,0 +1,53 @@
+{
+  "name": "@x3/csa-explainer",
+  "version": "1.0.0",
+  "description": "How FMCSA's SMS turns roadside inspections into CSA BASIC measures: what drives them and when inspections stop counting. HOS, Vehicle Maintenance, Driver Fitness, HM.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/fix-dts.mjs",
+    "test": "node --test \"test/*.test.ts\"",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "csa",
+    "fmcsa",
+    "sms",
+    "basic",
+    "csa-score",
+    "roadside-inspection",
+    "trucking",
+    "fleet-safety",
+    "dot-compliance",
+    "carrier"
+  ],
+  "author": "X3 Fleet Safety (https://x3fleetsafety.com)",
+  "license": "MIT",
+  "homepage": "https://github.com/x3allamerican/x3-csa-explainer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x3allamerican/x3-csa-explainer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/x3allamerican/x3-csa-explainer/issues"
+  },
+  "engines": {
+    "node": ">=22.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

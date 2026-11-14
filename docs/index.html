@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSA Score Explainer: What Drives Your BASIC and When It Drops | X3 Fleet Safety</title>
+<meta name="description" content="Free CSA explainer: enter your roadside inspections and see how FMCSA's SMS computes your HOS, Vehicle Maintenance, Driver Fitness and HazMat measures, which inspections drive them, and when each one stops counting.">
+<link rel="stylesheet" href="demo.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="https://x3fleetsafety.com"><b>X3</b> Fleet Safety</a>
+  <nav><a href="https://github.com/x3allamerican/x3-csa-explainer">Source on GitHub</a><a href="https://x3fleetsafety.com">X3 Fleet Safety</a></nav>
+</header>
+<main>
+  <h1>Why is my CSA score <span>what it is?</span></h1>
+  <p class="lede">Enter your roadside inspections and the severity weight of each violation (shown on your SMS carrier page). See each BASIC measure, which inspections drive it, and when they stop counting. Runs in your browser.</p>
+  <div class="grid">
+    <section class="box">
+      <h2>Inspections</h2>
+      <label for="log">One per line: date, level, then violations as BASIC:severity, with ! for out of service (hos, vehicle, fitness, hazmat)</label>
+      <textarea id="log" spellcheck="false"></textarea>
+      <div class="row">
+        <div><label for="asof">As of</label><input type="date" id="asof"></div>
+        <div><label for="ct">Carrier type</label><select id="ct"><option value="general">General</option><option value="passenger">Passenger</option><option value="hazmat">Hazmat</option></select></div>
+      </div>
+    </section>
+    <section class="box">
+      <h2>Measures</h2>
+      <ul class="list" id="out"></ul>
+    </section>
+  </div>
+  <p class="small" style="margin-top:22px">Follows FMCSA's SMS Methodology (version 3.21, June 2026): time weights 3/2/1 for 0-6, 6-12 and 12-24 months; +2 for out-of-service; 30-point cap per inspection. Percentiles need FMCSA's national peer data and are not computed. FMCSA has approved a revised SMS that is not live yet. Not legal advice.</p>
+</main>
+<footer>Free and open source (MIT) from <a href="https://x3fleetsafety.com">X3 Fleet Safety</a>: hours of service, driver files, drug and alcohol and CSA in one place.</footer>
+<script type="module">
+import { explain } from './csa.js';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const map = { hos: 'hos', vehicle: 'vehicle', fitness: 'driverFitness', hazmat: 'hazmat' };
+$('asof').value = new Date().toISOString().slice(0, 10);
+$('log').value = `2026-09-01 1 hos:7 vehicle:4!
+2026-03-10 3 hos:7!
+2025-12-02 1 vehicle:3 vehicle:6
+2025-08-20 1
+2025-05-14 2 fitness:4
+2025-02-01 1 vehicle:8!`;
+function run() {
+  try {
+    const ins = $('log').value.trim().split(/\n+/).map((line, n) => {
+      const [date, level, ...v] = line.trim().split(/\s+/);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error(`Line ${n + 1}: start with a date like 2026-09-01.`);
+      return { id: `#${n + 1}`, date, level: Number(level) || 1, violations: v.map((x) => { const m = /^(\w+):(\d+)(!?)$/.exec(x); if (!m || !map[m[1]]) throw new Error(`Line ${n + 1}: "${x}" should look like hos:7 or vehicle:4!`); return { basic: map[m[1]], severity: +m[2], outOfService: m[3] === '!' }; }) };
+    });
+    $('out').innerHTML = explain(ins, $('asof').value, $('ct').value).map((b) => `<li><span class="pill ${b.enoughData ? 'warn' : 'ok'}">${esc(b.name)}</span> measure <b>${b.measure}</b> <span class="small">(${b.relevantInspections} relevant inspections, threshold percentile ${b.threshold}%)</span><br><span class="small">${esc(b.note)}</span>${b.drivers.slice(0, 3).map((d) => `<br><span class="small">Inspection ${esc(d.id)} on ${d.date}: ${d.share}% of the measure; ${esc(d.dropsOffOrSteps)}.</span>`).join('')}</li>`).join('');
+  } catch (e) { $('out').innerHTML = `<li><span class="pill bad">Check</span> ${esc(e.message)}</li>`; }
+}
+document.querySelectorAll('main input, main select, main textarea').forEach((el) => el.addEventListener('input', run));
+run();
+</script>
+</body>
+</html>
